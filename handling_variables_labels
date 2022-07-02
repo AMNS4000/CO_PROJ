@@ -1,0 +1,33 @@
+error_dict={
+    1:"variable defination after instrucrtions",
+    2:"Incorrect way to define variable ,syntax error",
+    3:"mulitiple declaration of variable",
+    4:"multiple definations of label ",
+    5:"No hlt instruction at the end "}   
+variables={}
+labels={}
+def handle_variables(f1):
+    flag=0
+    str1=f1.readlines()
+    for i in range(len(str1)):
+        if str1[i].split()[0]=="var"":
+            if flag==1:
+                print(error_dict[1])
+        if str1[i].split()[0]!="var":
+            flag=1
+        if str1[i].split()[0]=="var" and len(str1[i].split()!=2):
+            print(error_dict[2])
+        if str1[i].split()[0]=="var":
+            if str1[i].split()[1] in variables:
+                print(error_dict[3])
+            else:
+                variables.append(str1[i].split()[1])
+
+def handle_labels(f1):
+    str1=f1.readlines()
+    for i in range(len(str1)):
+        if(str1[i].split()[0][-1]==":"):
+            if(str1[i].split()[0][0:-1] in labels):
+                print(error_dict[4])
+        else:
+            labels.append(str1[i].split()[0][0:-1])

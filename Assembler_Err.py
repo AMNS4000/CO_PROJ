@@ -81,4 +81,79 @@ def checkuseofvariable(l1):
     else:
         return True
 
+getbinary = lambda x, n: format(x, 'b').zfill(n)
 
+### READING FILE PRINTING OPCODE
+def TypeA(str): 
+    TypeA={"add":"10000","sub":"10001","mul":"10110","xor":"11010","or":"11011","and":"11100"}
+    un="00"
+    ns=TypeA[str[0]]+un+getbinary(int(str[1][1]),3)+getbinary(int(str[2][1]),3)+getbinary(int(str[3][1]),3)
+    return ns+"\n"
+
+def TypeB(str): 
+    TypeB={"mov":"10010","rs":"11000","ls":"11001"}
+    reg1s=getbinary(int(s[1][1]),3)
+    ns=TypeB[str[0]]+reg1s+getbinary(int(str[2][1:]),8)
+    return ns+"\n"
+
+def TypeC(str): 
+    TypeC={"div":"10111","mov":"10100","not":"11101","cmp":"11110"}
+    reg1s=getbinary(int(s[1][1]),3)
+    reg2s=getbinary(int(s[2][1]),3)
+    ns=TypeC[str[0]]+"00000"+reg1s+reg2s
+    return ns+"\n"
+
+def TypeD(str): 
+    TypeD={"ld":"10100","st":"10101"}
+    reg1s=getbinary(int(s[1][1]),3)
+    ns=TypeD[str[0]]+reg1s+str[2]
+    return ns+"\n"
+
+def TypeE(str): 
+    TypeE={"jmp":"11111","jlt":"01100","jgt":"01101","je":"01111"}
+    ns=TypeE[str[0]]+"000"+s[1]
+    return ns+"\n"
+
+f=open("Desktop/New Folder/q.txt",'r')  #change file path accordingly
+Lta=["add","sub","mul","xor","or","and"]
+Ltb=["mov","rs","ls"]
+Ltc=["div","mov","not","cmp"]
+Ltd=["ld","st"]
+Lte=["jmp","jlt","jgt","je"]
+L=["add","sub","mul","xor","or","and","mov","rs","ls","div","mov","not","cmp","ld","st","jmp","jlt","jgt","je"]
+def check(str2):
+    if str2[0] in Lta:
+        print(TypeA(str2))
+    elif str2[0] in Ltb :
+        if str2[0]!="mov":
+            print(TypeB(str2))
+        elif str2[0]=="mov" and str2[2][0]=="$":
+            print(TypeB(str2))
+    if str2[0] in Ltc:
+        if str2[0]!="mov":
+            print(TypeC(str2))
+        elif str2[0]=="mov" and str2[2][0]=="R":
+            print(TypeC(str2))
+    elif str2[0] in Ltd:
+        print(TypeD(str2))
+    
+    elif str2[0] in Lte:
+        print(TypeE(str2))
+    else:
+        return 0
+
+line_count=0
+for i in f.readlines():
+    s=i.split()
+    print(i)
+    if s[0] in L:
+        check(s)
+    elif s[0][:5]=="label":
+        s.pop(0)
+        check(s)
+    elif s[0] =="hlt":
+        print("0101000000000000")
+    line_count+=1 
+
+print(line_count)
+f.close()
