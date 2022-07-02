@@ -1,0 +1,96 @@
+#-----------------------------------------------------
+def check_variables(val):
+    global error
+    global flag
+    if(val[0]!="var"):
+        flag=1
+    if val[0]=="var" and len(val)!=2:
+        error=True
+        return error
+
+    if val[0]=="var":
+        if(flag==1):
+            error=True
+            return error
+        if(var[1] in variables):
+            error = True
+            return error
+        else:
+            variables.append(value[1])
+#--------------------------------------------------------
+def check_labels(val):
+    global error
+    if(val[0][-1]==":"):
+        if(val[0][0:-1] in labels):
+            error=True
+            return error
+        else:
+            labels.append(value[0][0:-1])   
+#--------------------------------------------------------
+def check_hlt(val):
+    global error
+    if(len(val)==2 ):
+        if val[1]!="hlt":
+            error=True
+            return error
+    elif(val[0]!="hlt"):
+        error=True
+        return error
+#---------------------------------------------------------
+line =0 
+flag=0
+for l in code:                                               
+    line+=1
+    value = list(l.split())
+    check_variables(value)
+#---------------------------------------------------------
+line=0                                                         
+for l in code:              
+    line+=1
+    value = list(l.split())
+    check_labels(value)
+
+#----------------------------------------------------------
+line=0
+for l in code:
+    line+=1
+    value=list(l.split())
+
+    if line==len(code):
+        check_hlt(value)
+
+    if (value[0][0:-1] in labels):
+        value.pop(0)
+
+    if (len(value)==0):
+        error=True
+        continue
+
+    if (value[0] not in op_symbols):
+        error =True
+        continue
+
+    if (value[0]=="mov" and len(value)>=2):
+        c=value[2][0]
+        if (65<=ord(c)<=90 or 97<=ord(c)<=122):
+            value[0]="mov2"
+        else:
+            value[0]="mov1"
+    if (op[value[0]][1]=="A"):
+        type_A(value)
+    elif(op[value[0]][1]=="C"):
+        type_C(value)
+    elif(op[value[0]][1]=="B"):
+        type_B(value)
+    elif(op[value[0]][1]=="D"):
+        type_d(value)
+    elif(op[value[0]][1]=="E"):
+        type_E(value)
+    elif(op[value[0]][1]=="F"):
+        type_F(value)
+    else:
+        error=True
+#------------------------------------------------
+labels={}
+variables={}
+
