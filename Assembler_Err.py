@@ -1,17 +1,19 @@
 #---FUNCTION FOR CONVERTING DECIMAL TO BINARY----   
-def dtob(n,size):
-    ns=""
-    while int(n)!=1:
-        ns+=str(n%2)
-        n=n//2
-    ns+=str(n)
-    if (len(ns)<size):
-        return ((size-len(ns))*"0"+ns[::-1])
-    return ns[::-1]
+# def getb(n,size):
+#     ns=""
+#     print(n,size)
+#     while int(n)!=1:
+#         ns+=str(n%2)
+#         n=n//2
+#     ns+=str(n)
+#     if (len(ns)<size):
+#         return ((size-len(ns))*"0"+ns[::-1])
+#     return ns[::-1]
+
 #---DEFINING DIFFERENT SYMBOLS LIST
 regd=[ "R0", "R1" , "R2" , "R3" , "R4" , "R5" , "R6"]
-vard=[]
 labeld=["hlt"]
+var={}
 errordict={1:"Wrong immediate value has to be an integer and in the range [0,255]",
            2:"Labels cannot be used in place of variables",
            3:"Invalid register used",
@@ -22,6 +24,7 @@ errordict={1:"Wrong immediate value has to be an integer and in the range [0,255
            8:"$ sign absent when writing immediate values",
            9:"undefined label",
            10:"wrong syntax for hlt instruction"}
+
 #---DIFFERENT FUNCTIONS FOR HANDLING ALL SORTS OF ERRORS---
 def checkimmediatevalue(n):
     if (isinstance(n,int)==False):
@@ -76,42 +79,41 @@ def heckuseoflabels(l1):
     else:
         return True
 def checkuseofvariable(l1):
-    if (l1[2] not in vard):
+    if (l1[2] not in var.keys()):
         return False
     else:
         return True
 
-getbinary = lambda x, n: format(x, 'b').zfill(n)
-
-### READING FILE PRINTING OPCODE
+getb= lambda x, n: format(x, 'b').zfill(n)
 def TypeA(str): 
     TypeA={"add":"10000","sub":"10001","mul":"10110","xor":"11010","or":"11011","and":"11100"}
     un="00"
-    ns=TypeA[str[0]]+un+getbinary(int(str[1][1]),3)+getbinary(int(str[2][1]),3)+getbinary(int(str[3][1]),3)
+    ns=TypeA[str[0]]+un+getb(int(str[1][1]),3)+getb(int(str[2][1]),3)+getb(int(str[3][1]),3)
     return ns+"\n"
 
 def TypeB(str): 
     TypeB={"mov":"10010","rs":"11000","ls":"11001"}
-    reg1s=getbinary(int(s[1][1]),3)
-    ns=TypeB[str[0]]+reg1s+getbinary(int(str[2][1:]),8)
+    reg1s=getb(int(s[1][1]),3)
+    ns=TypeB[str[0]]+reg1s+getb(int(str[2][1:]),8)
     return ns+"\n"
 
 def TypeC(str): 
     TypeC={"div":"10111","mov":"10100","not":"11101","cmp":"11110"}
-    reg1s=getbinary(int(s[1][1]),3)
-    reg2s=getbinary(int(s[2][1]),3)
+    reg1s=getb(int(s[1][1]),3)
+    reg2s=getb(int(s[2][1]),3)
     ns=TypeC[str[0]]+"00000"+reg1s+reg2s
     return ns+"\n"
 
 def TypeD(str): 
     TypeD={"ld":"10100","st":"10101"}
-    reg1s=getbinary(int(s[1][1]),3)
-    ns=TypeD[str[0]]+reg1s+str[2]
+    reg1s=getb(int(s[1][1]),3)
+    print(str[2])
+    ns=TypeD[str[0]]+reg1s+var[str[2]]
     return ns+"\n"
 
 def TypeE(str): 
     TypeE={"jmp":"11111","jlt":"01100","jgt":"01101","je":"01111"}
-    ns=TypeE[str[0]]+"000"+s[1]
+    ns=TypeE[str[0]]+"000"+str[1]
     return ns+"\n"
 
 f=open("Desktop/New Folder/q.txt",'r')  #change file path accordingly
@@ -139,21 +141,39 @@ def check(str2):
     
     elif str2[0] in Lte:
         print(TypeE(str2))
-    else:
-        return 0
 
-line_count=0
-for i in f.readlines():
+line_count=1
+
+F=f.readlines()
+cnt=0
+for i in F:
+    while (i[0]=="var"):
+        cnt+=1
+n=len(F)-cnt
+varchk=0
+for i in F:
     s=i.split()
     print(i)
-    if s[0] in L:
+    if s[0]=="var" :
+        if varchk==0:
+            var[s[1]]=getb(n,8)
+            n+=1
+        elif varchk==1:
+            print("Error")
+    elif s[0] in L:
+        varchk=1
         check(s)
-    elif s[0][:5]=="label":
-        s.pop(0)
+    elif s[0][-1]==":":
+        labeld.append(s.pop(0))
         check(s)
     elif s[0] =="hlt":
         print("0101000000000000")
     line_count+=1 
-
 print(line_count)
 f.close()
+print(labeld)
+
+
+
+####   DOUBTS
+#Do we need to count var instructions for program counter?
