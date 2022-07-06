@@ -1,6 +1,7 @@
 #----READING THE FILE----
 import sys
 l1=sys.stdin.read().splitlines()
+f1=open("Output.txt","w")
 #---FUNCTION FOR CONVERTING DECIMAL TO BINARY----   
 def dtob(n,size):
     ns=""
@@ -242,22 +243,36 @@ L=["add","sub","mul","xor","or","and","mov","rs","ls","div","mov","not","cmp","l
 #-----MAIN CHECK FUNCTION FOR PRINTING THE BINARY CODE ------
 def check(l,ln):
     if l[0] in Lta:
-        print(TypeA(l,ln))
+        str2=TypeA(l,ln)
+        print(str2)
+        f1.write(str2+"\n")
     elif l[0] in Ltb :
         if l[0]!="mov":
-            print(TypeB(l,ln))
+            str2=TypeB(l,ln)
+            print(str2)
+            f1.write(str2+"\n")
         elif l[0]=="mov" and l[2][0]=="$":
+            str2=TypeB(l,ln)
             print(TypeB(l,ln))
+            f1.write(str2+"\n")
     if l[0] in Ltc:
         if l[0]!="mov":
+            str2=TypeC(l,ln)
             print(TypeC(l,ln))
+            f1.write(str2+"\n")
         elif l[0]=="mov" and l[2][0]=="R":
+            str2=TypeC(l,ln)
             print(TypeC(l,ln))
+            f1.write(str2+"\n")
     elif l[0] in Ltd:
         print(TypeD(l,ln))
+        str2=TypeD(l,ln)
+        f1.write(str2+"\n")
     
     elif l[0] in Lte:
         print(TypeE(l,ln))
+        str2=TypeE(l,ln)
+        f1.write(str2+"\n")
 #---MAIN FUNCTION TO CALL THE CHECK FUNCTION----
 flag=0
 flag1=0
@@ -290,6 +305,7 @@ for i in l1:
     else:
         print(str(ln)+"Neither a label nor a variable nor an instruction")
     ln+=1
+f1.close()
 if (ln==len(l1) and "hlt" not in labeld and flag1!=1) :
     print("hlt not present in the code")
 
