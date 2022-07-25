@@ -1,0 +1,12 @@
+'''import sys
+f1=sys.stdin.read().splitlines()''' 
+list1=[]
+f1=open("Output.txt","r")
+code=f1.read().splitlines()
+for i in code:
+    #print(i)
+    list1.append(i)
+f1.close()
+def MEM(PC):
+    return(list1[PC])
+
