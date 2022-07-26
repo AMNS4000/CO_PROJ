@@ -3,42 +3,53 @@ import sys
 '''import sys
 f1=sys.stdin.read().splitlines()''' 
 
+f1=open("output.txt","w")
+f1.write("helo")
+f1.close()
 list1=[]
-f1=open("Output.txt","r")
+f1=open("output.txt","r")
 code=f1.read().splitlines()
 for i in code:
     #print(i)
     list1.append(i)
 f1.close()
 
-def MEM(PC):
-    return(list1[PC])
-MEMLIST=["0000000000000000"]*256
-print(MEMLIST,sep="\n")
+print(list1)
 PC_NO=0
+def MEM(PC):
+    return(list1[PC_NO])
+
+# MEMLIST=["0000000000000000"]*256
+# print(MEMLIST,sep="\n")
+
 halted=False
-
-def btod(str):
-    a=str
-    num=0
-    p=0
-    for i in a:
-        num+=int(i)*2**p
-        p+=1
-    return num
-
-def btod(str):
-    a=int(str)
-    num=0
-    p=0
-    for i in a:
-        num+=i*p
-        p+=1
-    return num
-
-for i in MEMLIST:
+def multiplication(reg1, reg2, reg3):
+    val1=btod(RF[str(reg1)])
+    val2=btod(RF[str(reg2)])
+    if (val1*val2>2**16-1):
+        FLAGS[12]="1"
+    else:
+        str3=dtob(val1*val2)
+        if (len(str3)==16):
+            RF[str(reg3)]=str3
+        elif (len(str3)!=16):
+            RF[str(reg3)]="0"*(16-len(str3))+str3
+    PC_NO+=1
+def move_imm(reg1,val):
+    RF[str(reg1)]="0"*8+val
+    PC_NO+=1
+def move_reg(reg1,reg2):
+    RF[str(reg2)]=RF[str(reg1)]
+    PC_NO+=1
+def Load(reg1,mem_addr):
+    RF[str(reg1)]=list1[int(mem_addr)]
+    PC_NO+=1
+def Store(reg1,mem_addr):
+    [mem_addr]=RF[str(reg1)]
+    PC_NO+=1
+for i in list1:
     if i[5]=="01010":
-        haltline=MEMLIST.index(i)
+        haltline=list1.index(i)
 
 RF={"R1":"0"*16,"R2":"0"*16,"R3":"0"*16,"R4":"0"*16,"R5":"0"*16,"R6":"0"*16,"FLAGS":"0"*16}
 FLAGS=["0"]*16
@@ -84,7 +95,7 @@ def subtraction(reg1, reg2, reg3):
             RF[str(reg3)]="0"*(16-len(str3))+str3
     PC_NO+=1
 
-def multiplication(reg1, reg2, reg3):
+def multiply(reg1, reg2, reg3):
     val1=btod(RF[str(reg1)])
     val2=btod(RF[str(reg2)])
     if (val1*val2>2**16-1):
@@ -108,7 +119,7 @@ def jumpless(mem):
         PC_NO+=1
 
 def jumpequal(mem):
-    if (FLAGS[-3]=="1"):
+    if (FLAGS[-2]=="1"):
         if (mem>=haltline):
             print("halt passed")
             return 0
@@ -118,7 +129,7 @@ def jumpequal(mem):
         PC_NO+=1
 
 def jumpgreat(mem):
-    if (FLAGS[-3]=="1"):
+    if (FLAGS[-1]=="1"):
         if (mem>=haltline):
             print("halt passed")
             return 0
@@ -172,9 +183,17 @@ def divide(R3,R4):
     RF["R0"]=dtob(x//y)
     RF["R1"]=dtob(x%y)
     PC_NO+=1
-
+def compare(reg1,reg2):
+    if (RF[str(reg1)]>RF[str(reg2)]):
+        FLAGS[-2]=1
+    elif (RF[str(reg1)]<RF[str(reg2)]):
+        FLAGS[-3]=1
+    elif (RF[str(reg1)]==RF[str(reg2)]):
+        FLAGS[-1]=1
 
 def EE(instruction):
+    print(PC_NO)
+    print(instruction)
     code=instruction[5]
     if (code=="10000"):
         R1="R"+str(btod(instruction[7:10]))
@@ -259,7 +278,6 @@ def EE(instruction):
     # PC_NO=str(int(PC_NO)+1)
     return 
 
-while (not halted):
-    instruction=MEM(PC_NO)
-    EE(instruction)
-    
+# while (not halted):
+#     instruction=MEM(PC_NO)
+#     EE(instruction)
