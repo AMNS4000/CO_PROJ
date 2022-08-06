@@ -8,7 +8,7 @@ for i in range(len(code)):
     list1[i]=code[i]
 #print(list1)
 PC_NO=0
-PClist=[0]
+PClist=[]
 def MEM(PC):
     return(list1[PC_NO])
 # print(MEMLIST,sep="\n")
@@ -319,10 +319,11 @@ while a!=256:
     PClist.append(0)
     a+=1
 y=[]
+
 for i in list1:
     y.append(int(i))
 import matplotlib.pyplot as plt
-x=PClist
+x=[int(x) for x in range(1,len(PClist)+1)]
 plt.scatter(x,y)
 plt.show() 
 
