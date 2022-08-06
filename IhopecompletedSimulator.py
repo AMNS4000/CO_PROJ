@@ -4,14 +4,12 @@ import sys
 list1=["0000000000000000"]*256
 f1=open("output.txt","r").read().splitlines()
 code=f1
-mnum=0
 for i in range(len(code)):
     list1[i]=code[i]
-hnum=i
-mnum=i+1
-print(mnum)
 #print(list1)
 PC_NO=0
+
+basictemp="0"*16
 def MEM():
     global PC_NO
     return(list1[PC_NO])
@@ -107,55 +105,59 @@ def Store(reg1,mem_addr):
 def jumpless(mem):
     global PC_NO
     if (FLAGS[-3]=="1"):
-        if (btod(mem)>=haltline):
+        if (btod(mem)>haltline):
             # print("halt passed")
             return 0
         else:   
             PC_NO=btod(mem)
-            RF["R7"]="0"*16
+            RF["R7"]=basictemp
             return 1
     else:
         PC_NO+=1
-        RF["R7"]="0"*16
+        RF["R7"]=basictemp
         return 1
 
 def jumpequal(mem):
     global PC_NO
     if (FLAGS[-1]=="1"):
-        if (btod(mem)>=haltline):
+        if (btod(mem)>haltline):
             # print("halt passed")
             return 0
         else:   
             PC_NO=btod(mem)
-            RF["R7"]="0"*16
+            RF["R7"]=basictemp
             return 1
     else:
         PC_NO+=1
-        RF["R7"]="0"*16
+        RF["R7"]=basictemp
         return 1
 
 def jumpgreat(mem):
     global PC_NO
     if (FLAGS[-2]=="1"):
-        if (btod(mem)>=haltline):
+        if (btod(mem)>haltline):
             # print("halt passed")
             return 0
         else:   
             PC_NO=btod(mem)
+            RF["R7"]=basictemp
             return 1
     else:
         PC_NO+=1
+        RF["R7"]=basictemp
         return 1
     
 
 def unconditional_jump(mem):
     global PC_NO
     # print("mem=",mem)
-    if (btod(mem)>=haltline):
+
+    if (btod(mem)>haltline):
         # print("halt passed")
         return 0
     else:   
         PC_NO=btod(mem)
+        RF["R7"]=basictemp
         return 1
 
 def INV(R1,R2):
@@ -205,16 +207,18 @@ def divide(R3,R4):
 
 
 def compare(reg1,reg2):
+    # RF["R7"]=basictemp
+    # print("RF==",RF["R7"])
     global PC_NO
     if (RF[str(reg1)]>RF[str(reg2)]):
         FLAGS[-2]="1"
-        RF["R7"]=''.join([str(elem) for elem in FLAGS])
+        RF["R7"]="0000000000000010"
     elif (RF[str(reg1)]<RF[str(reg2)]):
         FLAGS[-3]="1"
-        RF["R7"]=''.join([str(elem) for elem in FLAGS])
+        RF["R7"]="0000000000000100"
     elif (RF[str(reg1)]==RF[str(reg2)]):
         FLAGS[-1]="1"
-        RF["R7"]=''.join([str(elem) for elem in FLAGS])
+        RF["R7"]="0000000000000001"
     PC_NO+=1
     
 halted=False
