@@ -1,31 +1,29 @@
 #----READING THE FILE----
 import sys
-'''import sys
-f1=sys.stdin.read().splitlines()''' 
-list1=[]
-f1=open("output.txt","r")
-code=f1.read().splitlines()
-for i in code:
-    #print(i)
-    list1.append(i)
-f1.close()
-
-print(list1)
+# f1=sys.stdin.read().splitlines()
+list1=["0000000000000000"]*256
+f1=open("output.txt","r").read().splitlines()
+code=f1
+mnum=0
+for i in range(len(code)):
+    list1[i]=code[i]
+hnum=i
+mnum=i+1
+print(mnum)
+#print(list1)
 PC_NO=0
-def MEM(PC):
+def MEM():
+    global PC_NO
     return(list1[PC_NO])
-
-# MEML=["0000000000000000"]*256
 # print(MEMLIST,sep="\n")
 haltline=0
 for i in list1:
     if i[:5]=="01010":
         haltline=list1.index(i)
 
+memory=[]
 RF={"R0":"0"*16,"R1":"0"*16,"R2":"0"*16,"R3":"0"*16,"R4":"0"*16,"R5":"0"*16,"R6":"0"*16,"R7":"0"*16}
 FLAGS=["0"]*16
-RF["R0"]="0000000000000001"
-RF["R1"]="0000000000000001"
 def dtob(n):
     x=""
     while int(n)!=0:
@@ -94,54 +92,71 @@ def moveregister(reg1,reg2):
     else:
         RF[str(reg2)]=RF[str(reg1)]
     PC_NO+=1
+
 def Load(reg1,mem_addr):
-    global PC_NO
-    RF[str(reg1)]=list1[btod(mem_addr)]
+    global PC_NO,mnum
+    RF[str(reg1)]=list1[mem_addr]
     PC_NO+=1
+
+
 def Store(reg1,mem_addr):
     global PC_NO
-    list1[btod(mem_addr)]=RF[str(reg1)]
+    list1[mem_addr]=RF[str(reg1)]
     PC_NO+=1
+    
 def jumpless(mem):
     global PC_NO
     if (FLAGS[-3]=="1"):
-        if (mem>=haltline):
-            print("halt passed")
+        if (btod(mem)>=haltline):
+            # print("halt passed")
             return 0
         else:   
-            PC_NO=mem
+            PC_NO=btod(mem)
+            RF["R7"]="0"*16
+            return 1
     else:
         PC_NO+=1
+        RF["R7"]="0"*16
+        return 1
 
 def jumpequal(mem):
     global PC_NO
-    if (FLAGS[-2]=="1"):
-        if (mem>=haltline):
-            print("halt passed")
+    if (FLAGS[-1]=="1"):
+        if (btod(mem)>=haltline):
+            # print("halt passed")
             return 0
         else:   
-            PC_NO=mem
+            PC_NO=btod(mem)
+            RF["R7"]="0"*16
+            return 1
     else:
         PC_NO+=1
+        RF["R7"]="0"*16
+        return 1
 
 def jumpgreat(mem):
     global PC_NO
-    if (FLAGS[-1]=="1"):
+    if (FLAGS[-2]=="1"):
         if (btod(mem)>=haltline):
-            print("halt passed")
+            # print("halt passed")
             return 0
         else:   
-            PC_NO=mem
+            PC_NO=btod(mem)
+            return 1
     else:
         PC_NO+=1
+        return 1
+    
 
 def unconditional_jump(mem):
     global PC_NO
-    if (mem>=haltline):
-        print("halt passed")
+    # print("mem=",mem)
+    if (btod(mem)>=haltline):
+        # print("halt passed")
         return 0
     else:   
-        PC_NO=mem
+        PC_NO=btod(mem)
+        return 1
 
 def INV(R1,R2):
     global PC_NO
@@ -187,16 +202,21 @@ def divide(R3,R4):
     RF["R0"]=dtob(x//y)
     RF["R1"]=dtob(x%y)
     PC_NO+=1
+
+
 def compare(reg1,reg2):
     global PC_NO
     if (RF[str(reg1)]>RF[str(reg2)]):
         FLAGS[-2]="1"
+        RF["R7"]=''.join([str(elem) for elem in FLAGS])
     elif (RF[str(reg1)]<RF[str(reg2)]):
         FLAGS[-3]="1"
+        RF["R7"]=''.join([str(elem) for elem in FLAGS])
     elif (RF[str(reg1)]==RF[str(reg2)]):
         FLAGS[-1]="1"
+        RF["R7"]=''.join([str(elem) for elem in FLAGS])
     PC_NO+=1
-
+    
 halted=False
 
 def EE(instruction):
@@ -222,11 +242,11 @@ def EE(instruction):
         moveregister(R1,R2)
     elif(code=="10100"):
         R1="R"+str(btod(instruction[5:8]))
-        memadress=instruction[8:16]
+        memadress=btod(instruction[8:16])
         Load(R1,memadress)
     elif(code=="10101"):
         R1="R"+str(btod(instruction[5:8]))
-        memadress=instruction[8:16]
+        memadress=btod(instruction[8:16])
         Store(R1,memadress)
     elif(code=="10110"):
         R1="R"+str(btod(instruction[7:10]))
@@ -270,33 +290,39 @@ def EE(instruction):
         compare(R1,R2)
     elif(code=="11111"):
         memadress=instruction[8:16]
-        if (not unconditional_jump(memadress)):
+        if (unconditional_jump(memadress)==0):
             halted=True
     elif(code=="01100"):
         memadress=instruction[8:16]
-        if (not jumpless(memadress)):
+        if (jumpless(memadress)==0):
             halted=True
     elif(code=="01101"):
         memadress=instruction[8:16]
-        if (not jumpgreat(memadress)):
+        if (jumpgreat(memadress)==0):
             halted=True
     elif(code=="01111"):
         memadress=instruction[8:16]
-        if (not jumpequal(memadress)):
+        if (jumpequal(memadress)==0):
             halted=True
     elif(code=="01010"):
         halted=True
     # PC_NO=str(int(PC_NO)+1)
     return 
-
+numt=0
 while (not halted):
-    instruction=MEM(PC_NO)
+    instruction=MEM()
+    str_PC=dtob(PC_NO)
+    
+    # print(PC_NO,end=" ")
+    if (len(str_PC)==8):
+        print(str_PC,end=" ")
+    else:
+        print("0"*(8-len(str_PC))+str_PC,end=" ") 
     EE(instruction)
-    print(PC_NO,end=" ")    
     for i in RF.values():
         print(i,end=" ")
-    print("\n")
-    
+    print(" ")
+    numt+=1
 for i in list1:
     print(i,end="\n")
     
