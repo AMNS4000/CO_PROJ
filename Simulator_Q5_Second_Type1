@@ -1,0 +1,91 @@
+a=input("Enter the space in the memory :")
+print("Bit Addressable Memory\nNibble Addressable Memory\nByte Addressable Memory\n ")
+b=input("Enter how the memory is addressed (one from above) :")
+if b=="Bit Addressable Memory":
+    cell=1
+    size=0
+elif b=="Nibble Addressable Memory":
+    cell=4
+    size=2
+elif b=="Byte Addressable Memory":
+    cell=8
+    size=3
+else:
+    print("Wrong Input")
+    exit()
+def con(c):
+    count=0
+    while True:
+        ques=c/2
+        if c%2!=0:
+            if count==0:
+                break
+            else:
+                print("wrong input")
+                exit()
+                break
+        count+=1
+        c=ques
+        if ques==1:
+            break
+    return(count)
+if a[-2:]=="MB":
+    count=con(int(a[:-2]))
+    memo=20+count
+elif a[-2:]=="kB":
+    count=con(int(a[:-2]))
+    memo=10+count
+
+elif a[-2:]=="GB":
+    count=con(int(a[:-2]))
+    memo=30+count
+elif a[-2:]=="Mb":
+    count=con(a[:-2])
+    memo=20+count
+elif a[-3:]=="bit":
+    count=con(int(a[:-3]))
+    memo=-3+count
+elif a[-1:]=="B":
+    count=con(int(a[:-1]))
+    memo=count
+    
+else:
+    print("Wrong Input")
+    exit()
+
+    
+CPU=input("Enter the number of bits")
+print("Bit Addressable Memory\nNibble Addressable Memory\nByte Addressable Memory\nWord Addressable Memory ")
+change=input("Enter how you would want to change the current addressable memory to any of the rest 3 options :")
+if b==change:
+    print("0")
+    exit()
+if change=="Bit Addressable Memory":
+    cell=1
+    size=0
+elif change=="Nibble Addressable Memory":
+    cell=4
+    size=2
+elif change=="Byte Addressable Memory":
+    cell=8
+    size=3
+elif change=="Word Addressable Memory":
+    cell=CPU
+    if cell[-2:]=="MB":
+        count=con(int(cell[:-2]))
+    elif cell[-1:]=="B":
+        count=con(int(cell[:-1]))
+    elif cell[-2:]=="kB":
+        count=con(int(cell[:-2]))
+    elif cell[-2:]=="Mb":
+        count=con(int(cell[:-2]))
+    elif cell[-2:]=="GB":
+        count=con(int(cell[:-2]))
+    elif cell[-3:]=="bit":
+        count=con(int(cell[:-3]))
+else:
+    print("Wrong Input")
+    exit()
+ds=count-size
+after=memo-ds
+print(after-memo)
