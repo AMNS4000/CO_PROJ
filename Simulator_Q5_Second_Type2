@@ -1,0 +1,51 @@
+CPU=input("Enter the number of bits in the CPU")
+addr=input("Enter the number of address pins it has")
+print("Bit Addressable Memory\nNibble Addressable Memory\nByte Addressable Memory\nWord Addressable Memory ")
+b=input("Enter the type of addressable memory(one from above) :")
+def con(c):
+    count=0
+    while True:
+        ques=c/2
+        if c%2!=0:
+            if count==0:
+                break
+            else:
+                print("wrong input")
+                exit()
+        count+=1
+        c=ques
+        if ques==1:
+            break
+    return(count)
+if b=="Bit Addressable Memory":
+    cell=1
+    size=0
+elif b=="Nibble Addressable Memory":
+    cell=4
+    size=2
+elif b=="Byte Addressable Memory":
+    cell=8
+    size=3
+elif b=="Word Addressable Memory":
+    cell=CPU
+    if cell[-2:]=="MB":
+        size=con(int(cell[:-2]))
+    elif cell[-1:]=="B":
+        size=con(int(cell[:-1]))
+    elif cell[-2:]=="kB":
+        size=con(int(cell[:-2]))
+    elif cell[-2:]=="Mb":
+        size=con(int(cell[:-2]))
+    elif cell[-2:]=="GB":
+        size=con(int(cell[:-2]))
+    elif cell[-3:]=="bit":
+        size=con(int(cell[:-3]))
+    else:
+        print("Wrong Input")
+else:
+    print("Wrong Input")
+    exit()
+byt=size-3
+#print(int(addr[:-3]),byt,b)
+expo=int(addr[:-3])+byt
+print(2**expo,"B")
