@@ -2,10 +2,14 @@
 import sys
 f1=sys.stdin.read().splitlines()
 list1=["0000000000000000"]*256
-#f1=open("output.txt","r")
+# f1=open("output.txt","r")
 code=f1
+mnum=0
 for i in range(len(code)):
     list1[i]=code[i]
+hnum=i
+mnum=i+1
+print(mnum)
 #print(list1)
 PC_NO=0
 def MEM(PC):
@@ -87,12 +91,18 @@ def moveregister(reg1,reg2):
         RF[str(reg2)]=RF[str(reg1)]
     PC_NO+=1
 def Load(reg1,mem_addr):
-    global PC_NO
-    RF[str(reg1)]=list1[btod(mem_addr)]
+    global PC_NO,mnum,hnum
+    RF[str(reg1)]=list1[mnum]
+    if (mnum-hnum==1):
+        pass
+    else:
+        mnum-=1
     PC_NO+=1
 def Store(reg1,mem_addr):
-    global PC_NO
-    list1[btod(mem_addr)]=RF[str(reg1)]
+    global PC_NO,mnum
+    list1[mnum]=RF[str(reg1)]
+    if mnum<256:
+        mnum+=1
     PC_NO+=1
 def jumpless(mem):
     global PC_NO
